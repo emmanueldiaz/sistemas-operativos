@@ -19,7 +19,7 @@ int main()
   {
     if ((pids[i] = fork()) < 0)
     {
-      printf("No de pudo hacer fork del proceso %d\n", i + 1);
+      printf("Could not fork process %d\n", i + 1);
     }
     else if (pids[i] == 0)
     {
