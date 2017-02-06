@@ -5,7 +5,8 @@
 int main(int argc,char *argv[])
 {
 	int i;
+	char user[50], pass[50];
 	printf("Hola mundo, mi pid es %d\n",getpid());
-	for(i=0;i<argc;i++)
-		printf("%s\n",argv[i]);
+	printf("%s\n","enter user id");
+	scanf("%s", user);
 }

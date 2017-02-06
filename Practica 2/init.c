@@ -36,6 +36,7 @@ int main()
 
 void childProcess(int processNum)
 {
+  printf("%s\n", "Opening thing" );
   execlp("xterm", "-e", "./getty", NULL);
   exit(0);
 }
