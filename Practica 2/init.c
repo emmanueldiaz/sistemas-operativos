@@ -26,17 +26,31 @@ int main()
       childProcess(i);
     }
   }
-  while (finishedChilds < CHILDS)
+  while ((pid = wait(&status)) > 0)
   {
-    pid = wait(&status);
-    printf("proceso %d termino con status %d\n", pid, status);
-    finishedChilds++;
+    printf("Exit status of %d was %d\n", (int)pid, status);
+    if (status == 0)
+    {
+      for (i = 0; i < CHILDS; i++)
+      {
+        if (pid == pids[i])
+        {
+          printf("Restarting process: %d\n", i + 1);
+          pids[i] = fork();
+          if (pids[i] == 0)
+          {
+            childProcess(i);
+          }
+        }
+      }
+    }
   }
 }
 
 void childProcess(int processNum)
 {
-  printf("%s\n", "Opening thing" );
   execlp("xterm", "-e", "./getty", NULL);
+  printf("%s\n", "closing thing");
+
   exit(0);
 }
