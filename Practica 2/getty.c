@@ -46,9 +46,9 @@ int main(int argc, char *argv[])
         }
 
         /*
- 	* Read a file line by line.
- 	* http://rosettacode.org/wiki/Read_a_file_line_by_line
- 	*/
+        * Read a file line by line.
+        * http://rosettacode.org/wiki/Read_a_file_line_by_line
+        */
 
         f = fopen("passwd.txt", "rt");
         while ((fgets(line, 80, f) != NULL))
@@ -71,7 +71,9 @@ int main(int argc, char *argv[])
                 notIdentified = false;
                 //shh wll be called here
 
-                exit(1);
+                return 50;
+                execlp("xterm", "-e", "./getty", NULL);
+
                 break;
             }
         }
