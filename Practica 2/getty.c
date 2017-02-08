@@ -4,6 +4,7 @@
 #include <err.h>
 #include <string.h>
 #include <stdbool.h>
+#include <signal.h>
 
 #define ACCOUNTS 6
 
@@ -15,6 +16,8 @@ int main(int argc, char *argv[])
 
     FILE *f;
     size_t len;
+    pid_t pid;
+    int status;
     char line[80];
 
     bool notIdentified = true;
@@ -67,17 +70,32 @@ int main(int argc, char *argv[])
             }
             if (valid)
             {
-                printf("welcome");
                 notIdentified = false;
-                //shh wll be called here
 
-                return 50;
-                execlp("xterm", "-e", "./getty", NULL);
-
-                break;
+                pid = fork();
+                if (pid == 0)
+                {
+                    char command[] = "./sh";
+                    execlp("xterm", "xterm", "-e", command, NULL);
+                }
+                pid = wait(&status);
+                if (status == 50)
+                {
+                    kill(pid, SIGKILL);
+                    return 50;
+                }
+                if (status == 15)
+                {
+                    kill(pid, SIGKILL);
+                    return 50;
+                }
+                if (status == 10)
+                {
+                    notIdentified = true;
+                    break;
+                }
             }
         }
-        //this text may need to be changed to another place
         printf("Invalid Credentials, please try again\n");
         fclose(f);
     }

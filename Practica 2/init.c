@@ -60,7 +60,7 @@ int main()
           printf("All terminated: %d\n", i + 1);
           for (i = 0; i < CHILDS; i++)
           {
-            kill(pids[0], SIGKILL);
+            kill(pids[i], SIGKILL);
           }
           exit(0);
         }
