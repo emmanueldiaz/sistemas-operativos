@@ -12,13 +12,15 @@
 #include <signal.h>
 #include <sched.h>
 #include <stdlib.h>
+#include <math.h>
+#include <time.h>
 
 // 64kB stack
 #define FIBER_STACK 1024 * 64
 #define NITERATIONS 2000000000
 
 #define CORES 4
-int n = 0;
+long double n = 0;
 
 // The child thread will execute this function
 int threadFunction(void *argument)
@@ -26,16 +28,10 @@ int threadFunction(void *argument)
     int arg = *(int *)argument;
     int iterations = (NITERATIONS / CORES) * arg;
     int step = NITERATIONS / CORES;
-    long double fourthPI = 0;
-    clock_t begin = clock();
-    for (int iterations = iterations; i < (step * (arg + 1)); ++i)
+        for (int i = iterations; i < (step * (arg + 1)); ++i)
     {
-        fourthPI += (long double)pow(-1, i) / (2 * i + 1);
+        n+= (long double)pow(-1, i) / (2 * i + 1);
     }
-    clock_t end = clock();
-    printf("%Lf\n", 4 * fourthPI);
-    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("%f\n", time_spent);
 }
 
 int main()
@@ -45,10 +41,10 @@ int main()
     pid_t pid[CORES];
     int status;
 
+    clock_t begin = clock();
     // Allocate the stack
     for (i = 0; i < CORES; i++)
     {
-        å
             stack[i] = malloc(FIBER_STACK);
         if (stack[i] == 0)
         {
@@ -57,6 +53,7 @@ int main()
         }
     }
     printf("Creating child thread\n");
+    
 
     // Call the clone system call to create the child thread
     int iterations;
@@ -87,7 +84,11 @@ int main()
         // Free the stack
         free(stack[i]);
     }
-    printf("Child thread returned and stack freed. Total n = %d\n", n);
+    
+    printf("Child thread returned and stack freed. PI = %Lf\n", 4*n);
+    clock_t end = clock();
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("%f\n", time_spent);
 
     return 0;
 }

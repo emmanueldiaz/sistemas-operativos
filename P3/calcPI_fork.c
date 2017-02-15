@@ -10,6 +10,8 @@
 #include <string.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <math.h>
+#include <time.h>
 
 // 64kB stack
 #define FIBER_STACK 1024 * 64
@@ -18,22 +20,32 @@
 
 int n = 0;
 
+FILE *fp = NULL; 
+
+
 // The child thread will execute this function
 int threadFunction(int arg)
 {
+    char towrite[10];
+    char completeFile[30];
+    char file[] = "result";
+    char num[5];
+    sprintf(num, "%d", arg);
+    strcpy(completeFile, file);
+    strcat(completeFile, num);
     int iterations = (NITERATIONS / CORES) * arg;
     int step = NITERATIONS / CORES;
-    long double fourthPI = 0;
-    clock_t begin = clock();
-    for (int iterations = iterations; i < (step * (arg + 1)); ++i)
+    double fourthPI = 0;
+    for (int i = iterations; i < (step * (arg + 1)); ++i)
     {
-        fourthPI += (long double)pow(-1, i) / (2 * i + 1);
+        fourthPI += (double)pow(-1, i) / (2 * i + 1);
     }
+    sprintf(towrite, "%1.13f", fourthPI*4);
     //CREATE FILE HERE WITH RESULT
-    clock_t end = clock();
-    printf("%Lf\n", 4 * fourthPI);
-    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("%f\n", time_spent);
+    fp = fopen(completeFile, "w");
+    strcat(towrite, "\n");
+    fputs(towrite, fp);
+    fclose(fp);
     exit(0);
 }
 
@@ -41,12 +53,15 @@ int main()
 {
     pid_t pids[CORES], pid;
     char completeFile[30];
-    char file[] = "result";
     char num[5];
+    char file[] = "result";
     int status;
     int finishedChilds = 0;
     int i;
-    int total = 0;
+    double result;
+    double total = 0;
+
+    clock_t begin = clock();
 
     for (i = 0; i < CORES; i++)
     {
@@ -66,6 +81,7 @@ int main()
 
         FILE *fp;
         char code[10];
+        char *ptr;
         sprintf(num, "%d", i);
         strcpy(completeFile, file);
         strcat(completeFile, num);
@@ -73,9 +89,13 @@ int main()
         fscanf(fp, "%s", code);
 
         //make code an int
-        result = //conversion of code;
-        total + = result
+        result = strtod(code, &ptr);//conversion of code;
+        total += result;
         fclose(fp);
         remove(completeFile);
     }
+    clock_t end = clock();
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("%f\n", time_spent);
+    printf("%f\n", total);
 }
