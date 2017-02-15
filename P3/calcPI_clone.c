@@ -15,29 +15,38 @@
 
 // 64kB stack
 #define FIBER_STACK 1024 * 64
+#define NITERATIONS 2000000000
 
+#define CORES 4
 int n = 0;
 
 // The child thread will execute this function
 int threadFunction(void *argument)
 {
     int arg = *(int *)argument;
-    n += 5;
-    argument++;
-    printf("Inicia hilo %d\n", arg);
-    printf("child thread exiting\n");
-    return 0;
+    int iterations = (NITERATIONS / CORES) * arg;
+    int step = NITERATIONS / CORES;
+    long double fourthPI = 0;
+    clock_t begin = clock();
+    for (int iterations = iterations; i < (step * (arg + 1)); ++i)
+    {
+        fourthPI += (long double)pow(-1, i) / (2 * i + 1);
+    }
+    clock_t end = clock();
+    printf("%Lf\n", 4 * fourthPI);
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("%f\n", time_spent);
 }
 
 int main()
 {
     int i;
-    void *stack[4];
-    pid_t pid[4];
+    void *stack[CORES];
+    pid_t pid[CORES];
     int status;
 
     // Allocate the stack
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < CORES; i++)
     {
         å
             stack[i] = malloc(FIBER_STACK);
@@ -50,11 +59,10 @@ int main()
     printf("Creating child thread\n");
 
     // Call the clone system call to create the child thread
-
-    for (i = 0; i < 4; i++)
+    int iterations;
+    for (i = 0; i < CORES; i++)
     {
         // change threadFunction for new function *************************************************
-        // change i for the amount of cycles and range to iterate *********************************
         pid[i] = clone(&threadFunction, (char *)stack[i] + FIBER_STACK, SIGCHLD | CLONE_SIGHAND | CLONE_FS | CLONE_VM, (void *)&i);
         if (pid[i] == -1)
         {
@@ -64,9 +72,8 @@ int main()
     }
     // Wait for the child thread to exit
     // pid = waitpid( pid, 0, 0 );
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < CORES; i++)
     {
-
         waitpid(pid[i], 0, 0);
         if (pid[i] == -1)
         {
@@ -75,7 +82,7 @@ int main()
         }
     }
 
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < CORES; i++)
     {
         // Free the stack
         free(stack[i]);
