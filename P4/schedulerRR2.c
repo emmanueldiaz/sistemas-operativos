@@ -10,61 +10,73 @@ QUEUE waitinginevent[MAXTHREAD];
 
 void scheduler(int arguments)
 {
-	int old,next;
-	int changethread=0;
-	int waitingthread=0;
-	
-	int event=arguments & 0xFF00;
-	int callingthread=arguments & 0xFF;
+    int old, next;
+    int changethread = 0;
+    int waitingthread = 0;
+    int step1, step2;
 
-	if(event==NEWTHREAD)
-	{
-		// Un nuevo hilo va a la cola de listos
-		_enqueue(&ready,callingthread);
-	}
+    int event = arguments & 0xFF00;
+    int callingthread = arguments & 0xFF;
 
-	if (event == TIMER)
+    if (event == NEWTHREAD)
+    {
+	// Un nuevo hilo va a la cola de listos
+	_enqueue(&ready, callingthread);
+    }
+
+    if (event == TIMER)
+    {
+	if (step1 == 1)
 	{
+	    if (step2 == 1)
+	    {
 		if (old == currthread)
 		{
-			_enqueue(&ready,callingthread);
-			old = 0;
-			changethread = 1;
+		    _enqueue(&ready, callingthread);
+		    old = 0;
+		    changethread = 1;
 		}
 
 		old = currthread;
+	    }
+	    else
+	    {
+		step2 == 1;
+	    }
 	}
-	
-	if(event==BLOCKTHREAD)
+	else
 	{
-
-		threads[callingthread].status=BLOCKED;
-		_enqueue(&waitinginevent[blockevent],callingthread);
-
-		changethread=1;
+	    step1 == 1;
 	}
+    }
 
-	if(event==ENDTHREAD)
-	{
-		threads[callingthread].status=END;
-		changethread=1;
+    if (event == BLOCKTHREAD)
+    {
 
-	}
-	
-	if(event==UNBLOCKTHREAD)
-	{
-			threads[callingthread].status=READY;
-			_enqueue(&ready,callingthread);
-			//changethread=1;
-	}
+	threads[callingthread].status = BLOCKED;
+	_enqueue(&waitinginevent[blockevent], callingthread);
 
-	
-	if(changethread)
-	{
-		old=currthread;
-		next=_dequeue(&ready);
-		threads[next].status=RUNNING;
-		_swapthreads(old,next);
-	}
+	changethread = 1;
+    }
 
+    if (event == ENDTHREAD)
+    {
+	threads[callingthread].status = END;
+	changethread = 1;
+    }
+
+    if (event == UNBLOCKTHREAD)
+    {
+	threads[callingthread].status = READY;
+	_enqueue(&ready, callingthread);
+	//changethread=1;
+    }
+
+    if (changethread)
+    {
+	old = currthread;
+	next = _dequeue(&ready);
+	threads[next].status = RUNNING;
+	_swapthreads(old, next);
+    }
 }
