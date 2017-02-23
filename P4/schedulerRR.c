@@ -22,6 +22,12 @@ void scheduler(int arguments)
 		// Un nuevo hilo va a la cola de listos
 		_enqueue(&ready,callingthread);
 	}
+
+	if (event == TIMER)
+	{
+		_enqueue(&ready, callingthread);
+		changethread=1;
+	}
 	
 	if(event==BLOCKTHREAD)
 	{
@@ -43,7 +49,7 @@ void scheduler(int arguments)
 	{
 			threads[callingthread].status=READY;
 			_enqueue(&ready,callingthread);
-			changethread=1;
+			//changethread=1;
 	}
 
 	

@@ -43,7 +43,7 @@ void scheduler(int arguments)
 	{
 			threads[callingthread].status=READY;
 			_enqueue(&ready,callingthread);
-			changethread=1;
+			//changethread=1;
 	}
 
 	
