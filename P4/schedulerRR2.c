@@ -21,62 +21,61 @@ void scheduler(int arguments)
     if (event == NEWTHREAD)
     {
 	// Un nuevo hilo va a la cola de listos
-	_enqueue(&ready, callingthread);
+		_enqueue(&ready, callingthread);
     }
 
     if (event == TIMER)
     {
-	if (step1 == 1)
-	{
-	    if (step2 == 1)
-	    {
-		if (old == currthread)
+		if (step1 == 1)
 		{
-		    _enqueue(&ready, callingthread);
-		    old = 0;
-		    changethread = 1;
+			if (step2 == 1)
+			{
+				if (old == currthread)
+				{
+					step1 = 0;
+					step2 = 0;
+					_enqueue(&ready, callingthread);
+					changethread = 1;
+				}
+			}
+			else
+			{
+				step2 == 1;
+			}
 		}
-
-		old = currthread;
-	    }
-	    else
-	    {
-		step2 == 1;
-	    }
-	}
-	else
-	{
-	    step1 == 1;
-	}
+		else
+		{
+			step1 == 1;
+		}
     }
 
     if (event == BLOCKTHREAD)
     {
 
-	threads[callingthread].status = BLOCKED;
-	_enqueue(&waitinginevent[blockevent], callingthread);
+		threads[callingthread].status = BLOCKED;
+		_enqueue(&waitinginevent[blockevent], callingthread);
 
-	changethread = 1;
+		changethread = 1;
     }
 
     if (event == ENDTHREAD)
     {
-	threads[callingthread].status = END;
-	changethread = 1;
+		threads[callingthread].status = END;
+		changethread = 1;
     }
 
     if (event == UNBLOCKTHREAD)
     {
-	threads[callingthread].status = READY;
-	_enqueue(&ready, callingthread);
+		threads[callingthread].status = READY;
+		_enqueue(&ready, callingthread);
 	//changethread=1;
     }
 
     if (changethread)
     {
-	old = currthread;
-	next = _dequeue(&ready);
-	threads[next].status = RUNNING;
-	_swapthreads(old, next);
+		old = currthread;
+		next = _dequeue(&ready);
+		threads[next].status = RUNNING;
+		_swapthreads(old, next);
     }
 }
